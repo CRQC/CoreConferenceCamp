@@ -6,6 +6,8 @@ using System.Net;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
+using CoreCodeCamp.Models;
 
 namespace CoreCodeCamp.Controllers
 {
@@ -14,20 +16,24 @@ namespace CoreCodeCamp.Controllers
 
     {
         private readonly ICampRepository _repository;
+        private readonly IMapper _mapper;
 
-        public CampsController(ICampRepository repository)
+        public CampsController(ICampRepository repository, IMapper  mapper)
         {
             _repository = repository;
+            _mapper = mapper;
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetCamps() 
+        public async Task<IActionResult> Get() 
         {
             try
             {
 
-                var results = _repository.GetAllCampsAsync();
-                return Ok(results);
+                var results = await _repository.GetAllCampsAsync();
+
+                CampModel[] models = _mapper.Map<CampModel[]>(results);
+                return Ok(models);
             }
             catch (Exception)
             {
