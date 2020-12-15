@@ -12,6 +12,7 @@ using CoreCodeCamp.Models;
 namespace CoreCodeCamp.Controllers
 {
     [Route("api/[controller]")]
+    [ApiController]
     public class CampsController : ControllerBase
 
     {
@@ -61,6 +62,23 @@ namespace CoreCodeCamp.Controllers
 
                 return this.StatusCode(StatusCodes.Status500InternalServerError, "Database Error");
             }
+        }
+
+
+        public async Task<ActionResult<CampModel>> Post([FromBody] CampModel model)
+        {
+            try
+            {
+                return Ok();
+            }
+            catch (Exception)
+            {
+
+                return this.StatusCode(StatusCodes.Status500InternalServerError, "Database error, on Post method (CampsController)");
+            }
+        
+        
+        
         }
 
     }
