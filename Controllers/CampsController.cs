@@ -131,11 +131,6 @@ namespace CoreCodeCamp.Controllers
                 {
                     return _mapper.Map<CampModel>(oldCamp);
                 }
-                else
-                {
-                    return NotFound();
-                }
-
 
             }
             catch (Exception)
@@ -143,8 +138,40 @@ namespace CoreCodeCamp.Controllers
 
                 return this.StatusCode(StatusCodes.Status500InternalServerError, "Database error, on Put method (CampsController)"); ;
             }
-        
-        
+
+            return BadRequest("Failed to delete the camp");
         }
+
+
+
+
+        [HttpDelete("{moniker}")]
+        public async Task<IActionResult> Delete(string moniker)
+        {
+            try
+            {
+                var oldCamp = await _repository.GetCampAsync(moniker);
+                if (oldCamp == null)
+                {
+                    return NotFound($"Could not find camp with moniker of {moniker}");
+                }
+
+                _repository.Delete(oldCamp);
+
+
+                if (await _repository.SaveChangesAsync())
+                {
+                    return Ok();
+                }
+                
+            }
+            catch (Exception)
+            {
+                return this.StatusCode(StatusCodes.Status500InternalServerError, "Database error, on Put method (CampsController)"); ;
+            }
+
+            return BadRequest("Failed to delete the camp");
+        }
+
     }
 }
