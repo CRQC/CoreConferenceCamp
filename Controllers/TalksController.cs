@@ -56,5 +56,44 @@ namespace CoreCodeCamp.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, "Failed to get Talks");
             }
         }
+
+        [HttpPost]
+        public async Task<ActionResult<TalkModel>> Post(string moniker, TalkModel talkModel)
+        {
+            try
+            {
+                var camp = await _repository.GetCampAsync(moniker);
+                if (camp == null)
+                {
+                    return BadRequest("Camp does not exist");
+                }
+
+                var talk = _mapper.Map<Talk>(talkModel);
+                talk.Camp = camp;
+                _repository.Add(talk);
+
+                if (await _repository.SaveChangesAsync())
+                {
+                    var url = _linkGenerator.GetPathByAction(HttpContext,
+                        "Get",
+                        values: new { moniker, id = talk.TalkId });
+
+                    return Created(url, _mapper.Map<TalkModel>(talk));
+                }
+                else
+                {
+                    return BadRequest("Failed to save new Talk");
+                }
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Failed to get Talks");
+            }
+        }
+
+
+
+
+
     }
 }
