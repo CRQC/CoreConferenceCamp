@@ -70,6 +70,13 @@ namespace CoreCodeCamp.Controllers
 
                 var talk = _mapper.Map<Talk>(talkModel);
                 talk.Camp = camp;
+                
+                if (talkModel.Speaker == null) return BadRequest("Speaker ID is required");
+                var speaker = await _repository.GetSpeakerAsync(talkModel.Speaker.SpeakerId);
+                if (speaker == null) return BadRequest("Speaker could not be found");
+
+                talk.Speaker = speaker;
+
                 _repository.Add(talk);
 
                 if (await _repository.SaveChangesAsync())
@@ -91,9 +98,47 @@ namespace CoreCodeCamp.Controllers
             }
         }
 
+        [HttpPut("{id:int}")]
+        public async Task<ActionResult<TalkModel>> Put(string moniker, int id, TalkModel model) 
+        {
+            try
+            {
+                var talk = await _repository.GetTalkByMonikerAsync(moniker, id, true);
+                if (talk == null)
+                {
+                    return NotFound("Could not fin the talk ");
+                }
+
+                if (model.Speaker != null)
+                {
+                    var speaker = await _repository.GetSpeakerAsync(model.Speaker.SpeakerId);
+                    if (speaker != null)
+                    {
+                        talk.Speaker = speaker;
+                    }
+                }
+
+
+                _mapper.Map(model, talk);
+
+                if (await _repository.SaveChangesAsync())
+                {
+                    return _mapper.Map<TalkModel>(talk);
+                }
+                else
+                {
+                    return BadRequest("error on request");
+                }
 
 
 
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Failed to put Talks");
+            }
+        
+        }
 
     }
 }
