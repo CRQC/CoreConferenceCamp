@@ -12,6 +12,8 @@ using CoreCodeCamp.Models;
 namespace CoreCodeCamp.Controllers
 {
     [Route("api/[controller]")]
+    [ApiVersion("1.0")]
+    [ApiVersion("1.2")]
     [ApiController]
     public class CampsController : ControllerBase
 
@@ -24,6 +26,54 @@ namespace CoreCodeCamp.Controllers
             _repository = repository;
             _mapper = mapper;
         }
+
+
+
+
+
+        [HttpGet("{moniker}")]
+        [MapToApiVersion("1.0")]
+        public async Task<ActionResult<CampModel[]>> Get(string moniker)
+        {
+            try
+            {
+                var results = await _repository.GetCampAsync(moniker);
+
+                if (results == null)
+                {
+                    return NotFound();
+                }
+
+                return _mapper.Map<CampModel[]>(results);
+            }
+            catch (Exception)
+            {
+                return this.StatusCode(StatusCodes.Status500InternalServerError, "Database Error");
+            }
+        }
+
+
+        [HttpGet("{moniker}")]
+        [MapToApiVersion("1.1")]
+        public async Task<ActionResult<CampModel[]>> Get11(string moniker)
+        {
+            try
+            {
+                var results = await _repository.GetCampAsync(moniker);
+
+                if (results == null)
+                {
+                    return NotFound();
+                }
+
+                return _mapper.Map<CampModel[]>(results);
+            }
+            catch (Exception)
+            {
+                return this.StatusCode(StatusCodes.Status500InternalServerError, "Database Error");
+            }
+        }
+
 
         [HttpGet]
         public async Task<ActionResult<CampModel[]>> Get(bool includeTalks =  false) 
