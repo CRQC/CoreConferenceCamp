@@ -12,9 +12,10 @@ using Microsoft.AspNetCore.Routing;
 
 namespace CoreCodeCamp.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/v{version:apiVersion}/[controller]")]
+    //[Route("api/v{version:apiVersion}/camps")]
     [ApiVersion("1.0")]
-    [ApiVersion("1.2")]
+    [ApiVersion("1.1")]
     [ApiController]
     public class CampsController : ControllerBase
 
@@ -117,25 +118,25 @@ namespace CoreCodeCamp.Controllers
             }
         }
 
-        [HttpGet("{moniker}")]
-        public async Task<ActionResult<CampModel[]>> Get(string moniker)
-        {
-            try
-            {
-                var results = await _repository.GetCampAsync(moniker);
-                if (results == null)
-                {
-                    return NotFound();
-                }
+        //[HttpGet("{moniker}")]
+        //public async Task<ActionResult<CampModel[]>> Get(string moniker)
+        //{
+        //    try
+        //    {
+        //        var results = await _repository.GetCampAsync(moniker);
+        //        if (results == null)
+        //        {
+        //            return NotFound();
+        //        }
 
-                return _mapper.Map<CampModel[]>(results);
-            }
-            catch (Exception)
-            {
+        //        return _mapper.Map<CampModel[]>(results);
+        //    }
+        //    catch (Exception)
+        //    {
 
-                return this.StatusCode(StatusCodes.Status500InternalServerError, "Database Error- Get moniker error");
-            }
-        }
+        //        return this.StatusCode(StatusCodes.Status500InternalServerError, "Database Error- Get moniker error");
+        //    }
+       // }
 
         public async Task<ActionResult<CampModel>> Post([FromBody] CampModel model)
         {
