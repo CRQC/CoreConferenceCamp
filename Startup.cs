@@ -4,15 +4,19 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using AutoMapper;
+using CoreCodeCamp.Controllers;
 using CoreCodeCamp.Data;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Versioning;
+using Microsoft.AspNetCore.Mvc.Versioning.Conventions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+
 
 namespace CoreCodeCamp
 {
@@ -33,6 +37,17 @@ namespace CoreCodeCamp
                     opt.AssumeDefaultVersionWhenUnspecified = true;
                     opt.DefaultApiVersion = new ApiVersion(1, 1);
                     opt.ReportApiVersions = true;
+                    opt.ApiVersionReader = new UrlSegmentApiVersionReader();
+                    //opt.ApiVersionReader = ApiVersionReader.Combine(
+                    //    new HeaderApiVersionReader("X-Version"),
+                    //    new QueryStringApiVersionReader("Ver", "version"));
+
+                    //opt.Conventions.Controller<TalksController>()
+                    //.HasApiVersion(new ApiVersion(1, 0))
+                    //.HasApiVersion(new ApiVersion(1, 1))
+                    //.Action(x => x.Delete(default(string), default(int)))
+                    //.MapToApiVersion(1, 1);
+                    
                 });
 
             services.AddMvc(opt => opt.EnableEndpointRouting = false)
